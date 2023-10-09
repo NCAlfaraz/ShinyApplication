@@ -1,0 +1,65 @@
+---
+title: "ShinyApplication Pitch"
+author: "Nuria"
+date: "`r Sys.Date()`"
+output: ioslides_presentation
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+## INTRO
+
+The objective of this App is visualization of the dependency of the miles/gallon figure for different car models with 3 different characteristics: number of cylinders, gear and whether if they are automatic or manual. 
+
+## INPUT
+
+You need to give this input to the app:
+```{r echo = FALSE}
+library(shiny)
+library(datasets)
+
+selectInput("variable", "Observed Characteristic:",
+                    list("Cylinders" = "cyl", 
+                         "Gears" = "gear",
+                         "Transmission" = "am"))
+```
+
+## OUTPUT
+
+As the output from the app, you will get plot of the miles per gallon value versus de parameter selected as the input.
+```{r echo = FALSE}
+mpgData <- mtcars
+mpgData$am <- factor(mpgData$am, labels = c("Automatic", "Manual"))
+
+# Define server logic required to plot various variables against mpg
+shinyServer(function(input, output) {
+        
+        # Compute the forumla text in a reactive expression
+        formulaText <- reactive({
+                paste("mpg ~", input$variable)
+        })
+        
+        # Return the formula text for printing as a title
+        output$title <- renderText({
+                formulaText()
+        })
+        
+        # Generate a plot 
+        output$mpgPlot <- renderPlot({
+                
+                plot(formula = as.formula(formulaText()), 
+                     data = mpgData,
+                     xlab = input$variable,
+                     ylab = "mpg",
+                     type="p",
+                     col = "black")
+        })
+})
+```
+
+## THANK YOU
+
+
+
